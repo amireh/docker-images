@@ -1,0 +1,73 @@
+#!/bin/bash
+
+VERSION="1.0"
+
+wants_help() {
+  for arg in "${@}"; do
+    if [[ $arg == "-h" || $arg == "--help" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+print_help() {
+  local progname=$(basename $0)
+
+  cat <<-EOF
+$progname $VERSION
+produce a docker image from a provisioned version of this one
+
+USAGE:
+
+    $progname TARGET_IMAGE PATH
+
+WHERE:
+
+  TARGET_IMAGE is the name of the image to produce and
+  PATH         is the path to the playbook .yml file to apply
+
+EXAMPLE:
+
+    # build the extended image:
+    docker run \\
+      --rm \\
+      -v /var/run/docker.sock:/var/run/docker.sock \\
+      -v "\$PWD":/playbook \\
+      amireh/ansible:latest \\
+        $progname my-custom-ansible /playbook/extensions.yml
+
+    # use the extended image with the "latest" tag instead of
+    # amireh/ansible:
+    docker run ... my-custom-ansible:latest ansible-playbook ...
+EOF
+}
+
+provision() {
+  local image="${1}"
+  local playbook="${2}"
+
+  local current_version="$(sha1sum "${playbook}" | cut -d' ' -f1)"
+  local target_image="${image}:${current_version}"
+  local latest_image="${image}:latest"
+
+  if [ -n "$(docker image ls -q "${target_image}")" ]; then
+    exit 0
+  fi
+
+  ansible-playbook -i localhost, -c local "${playbook}" || exit $?
+
+  docker image ls -q "${image}" | uniq | xargs docker image rm -f 1>/dev/null
+
+  docker commit --pause="false" "$(hostname)"     "${target_image}"  1>/dev/null &&
+  docker tag                    "${target_image}" "${latest_image}"  1>/dev/null
+}
+
+wants_help "$@" && print_help && exit 0
+
+if [[ $# -lt 2 ]]; then
+  print_help && exit 1
+fi
+
+provision "$@"
