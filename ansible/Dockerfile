@@ -40,4 +40,4 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/reposi
 
 COPY bin/ /usr/bin/
 
-ENTRYPOINT [ "/usr/bin/stash-vault-password" ]
+ENTRYPOINT [ "/usr/bin/ansible-stash-vault-pass" ]

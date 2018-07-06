@@ -13,15 +13,15 @@ fi
 MIMIC_GROUP="donkey"
 MIMIC_USER="donkey"
 IFS=" " \
-MIMIC_GID=( $MIMIC_GID )
-MIMIC_PRIMARY_GID="${MIMIC_GID[0]}"
+MIMIC_GID_LIST=( $MIMIC_GID )
+MIMIC_PRIMARY_GID="${MIMIC_GID_LIST[0]}"
 
 create_groups() {
   local letter="a"
   local group
 
-  for gid in "${MIMIC_GID[@]}"; do
-    if [[ ${gid} == ${MIMIC_GID[0]} ]]; then
+  for gid in "${MIMIC_GID_LIST[@]}"; do
+    if [[ ${gid} == ${MIMIC_GID_LIST[0]} ]]; then
       group="$MIMIC_GROUP"
     else
       group="mimic-$letter"
@@ -43,17 +43,17 @@ create_user() {
       --non-unique \
       --shell /bin/sh \
       "$MIMIC_USER" \
-  && for gid in "${MIMIC_GID[@]}"; do
+  && for gid in "${MIMIC_GID_LIST[@]}"; do
     usermod -a -G "$gid" "$MIMIC_USER" || exit $?
   done
 }
 
 create_home() {
-  if [ ! -d "/home/$MIMIC_USER" ]; then
+  if [[ ! -d /home/$MIMIC_USER ]]; then
     mkdir -p "/home/$MIMIC_USER" || exit $?
   fi
 
-  chown -R "$MIMIC_USER:$MIMIC_GROUP" "/home/$MIMIC_USER"
+  chown "$MIMIC_USER:$MIMIC_GROUP" "/home/$MIMIC_USER"
 }
 
 grant_docker_acces_to_donkey() {
@@ -65,11 +65,19 @@ grant_docker_acces_to_donkey() {
   fi
 }
 
+restrict_vault_password_file() {
+  if [[ -f ${ANSIBLE_VAULT_PASSWORD_FILE} ]]; then
+    chown "$MIMIC_USER":"$MIMIC_GROUP" "${ANSIBLE_VAULT_PASSWORD_FILE}" &&
+    chmod 0400 "${ANSIBLE_VAULT_PASSWORD_FILE}"
+  fi
+}
+
 create_groups &&
 create_user &&
 create_home &&
-grant_docker_acces_to_donkey || {
-  echo "$0: unable to masquerade as \"$MIMIC_UID\":\"$MIMIC_GID\"" 1>&2
+grant_docker_acces_to_donkey &&
+restrict_vault_password_file || {
+  echo "$0: unable to masquerade as \"$MIMIC_UID\":\"$MIMIC_PRIMARY_GID\"" 1>&2
   exit 1
 }
 

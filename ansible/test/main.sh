@@ -12,9 +12,12 @@ import "bb/tasks.sh"
 
 export IMAGE="amireh/ansible:${VERSION:-latest}"
 
+tasks.define 'bin/ansible-extend'
+tasks.define 'bin/ansible-stash-vault-pass'
 tasks.define 'mimic/docker_access_test'
-tasks.define 'mimic/group_test'
+tasks.define 'mimic/groups_test'
 tasks.define 'mimic/home_test'
+tasks.define 'mimic/vault_file_test'
 tasks.read_wants $@
 
 shift $?

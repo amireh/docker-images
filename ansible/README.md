@@ -33,6 +33,14 @@ _TODO_ write about stash-vault-password
 
 ## Changelog
 
+### 3.0
+
+- the `ansible-playbook-build` command has been renamed to `ansible-extend` and
+  now accepts positional arguments instead of environment variables. The new
+  signature becomes:
+
+      ansible-extend TARGET_IMAGE[:TAG] PATH
+
 ### 2.3
 
 - Fixed an issue on OS X that was preventing the donkey user from accessing the

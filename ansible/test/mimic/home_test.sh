@@ -1,29 +1,29 @@
-import "bb/tasks.sh"
-import "../assert.sh"
+import "./helpers.sh"
 
 up() {
   assert.ok "it creates the home directory" \
-    docker_run test -d /home/donkey
+    docker_run_as_me mimic test -d /home/donkey
 
-  assert.eql "it gives user ownership to donkey" \
+  assert.eql "it gives user ownership of home to donkey" \
     a : '1' \
-    b : docker_run stat -c '%u' /home/donkey
+    b : docker_run_as 1 1 mimic stat -c '%u' /home/donkey
 
-  assert.eql "it gives group ownership to donkey" \
+  assert.eql "it gives group ownership of home to donkey" \
     a : '1' \
-    b : docker_run stat -c '%g' /home/donkey
+    b : docker_run_as 1 1 mimic stat -c '%g' /home/donkey
 
-  assert.ok "it lets donkey write to his home directory" \
-    docker_run touch /home/donkey/foo
-}
+  assert.ok "it does let donkey write to his home directory" \
+    docker_run_as_me mimic touch /home/donkey/foo
 
-docker_run() {
-  docker run \
-    --rm \
-    -e MIMIC_UID="1" \
-    -e MIMIC_GID="1" \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v "$(import.resolve '../../bin/mimic')":"/usr/bin/mimic" \
-    $IMAGE \
-      mimic "$@"
+  assert.eql "does not attempt to chown bound volumes inside home" \
+    a : 'donkey' \
+    b : docker run \
+        --rm \
+        -e MIMIC_UID="$(id -u)" \
+        -e MIMIC_GID="$(id -G)" \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v "${HOME}/.ssh":"/home/donkey/.ssh":"ro" \
+        -v "$(import.resolve '../../bin/mimic')":"/usr/bin/mimic" \
+        $IMAGE \
+          mimic stat -c '%U' /home/donkey
 }
