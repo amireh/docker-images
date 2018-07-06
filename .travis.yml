@@ -1,13 +1,15 @@
-language: go
+language: c
 
 sudo: required
 
 services:
   - docker
 
-os:
-  - osx
-  - linux
+os: linux
+
+# skip the install step
+# see https://docs.travis-ci.com/user/customizing-the-build/#Customizing-the-Installation-Step
+install: true
 
 before_install:
   - docker build -t amireh/ansible:travis-ci .
