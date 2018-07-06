@@ -38,8 +38,6 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/reposi
   && apk del build-base curl \
   && rm -rf /var/cache/apk/*
 
-COPY "ansible-playbook-build.sh" /usr/bin/ansible-playbook-build
-COPY "mimic.sh" /usr/bin/mimic
-COPY "stash-vault-password.sh" /usr/bin/stash-vault-password
+COPY bin/ /usr/bin/
 
 ENTRYPOINT [ "/usr/bin/stash-vault-password" ]

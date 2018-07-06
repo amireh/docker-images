@@ -1,0 +1,16 @@
+language: go
+
+sudo: required
+
+services:
+  - docker
+
+os:
+  - osx
+  - linux
+
+before_install:
+  - docker build -t amireh/ansible:travis-ci .
+
+script:
+  - VERSION=travis-ci ./test/main.sh
