@@ -1,0 +1,6 @@
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - file:
+        state: touch
+        path: /ansible-extension
