@@ -34,18 +34,16 @@ create_groups() {
 }
 
 create_user() {
-  echo "CREATE_MAIL_SPOOL=no" >> /etc/default/useradd \
-  && useradd \
-      --no-create-home \
-      --uid "$MIMIC_UID" \
-      --gid "$MIMIC_PRIMARY_GID" \
-      --no-log-init \
-      --non-unique \
-      --shell /bin/sh \
-      "$MIMIC_USER" \
-  && for gid in "${MIMIC_GID_LIST[@]}"; do
-    usermod -a -G "$gid" "$MIMIC_USER" || exit $?
-  done
+  echo "CREATE_MAIL_SPOOL=no" >> /etc/default/useradd &&
+  useradd \
+    --no-create-home \
+    --uid "$MIMIC_UID" \
+    --gid "$MIMIC_PRIMARY_GID" \
+    --groups "$(IFS=, ; echo "${MIMIC_GID_LIST[*]}")" \
+    --no-log-init \
+    --non-unique \
+    --shell /bin/sh \
+    "$MIMIC_USER"
 }
 
 create_home() {
