@@ -1,8 +1,7 @@
 # amireh/ansible
 
-A minimal (yet extensible) installation of Ansible on Alpine Linux with the
-Docker client allowing Ansible to utilize the `docker` connection to provision
-containers.
+A minimal installation of Ansible on Alpine Linux with the Docker client
+allowing Ansible to utilize the `docker` connection to provision containers.
 
 **Table of Contents**
 
