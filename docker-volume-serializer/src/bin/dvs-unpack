@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require '/usr/lib/dvs'
+
+DVS.new.unpack(
+  archive_dir: ENV.fetch('DVS_ARCHIVE_DIR', '/var/lib/archives'),
+  compression: DVS::Tar::COMPRESSION[ENV['DVS_COMPRESS']],
+  owner_gid: ENV.fetch('DVS_GID'),
+  owner_uid: ENV.fetch('DVS_UID'),
+  verbosity: ENV.fetch('DVS_VERBOSE', '1').to_i,
+  volumes: DVS::Volumes.from(ENV.fetch('DVS_VOLUMES'), base: ENV['DVS_VOLUME_DIR']),
+)
