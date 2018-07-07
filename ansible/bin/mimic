@@ -55,7 +55,7 @@ create_home() {
 }
 
 grant_docker_acces_to_donkey() {
-  if [[ -f /var/run/docker.sock ]]; then
+  if [[ -a /var/run/docker.sock ]]; then
     local gid="$(stat -c '%g' /var/run/docker.sock)"
 
     groupadd --non-unique --gid "${gid}" "donkey-docker" &&
