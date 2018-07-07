@@ -12,7 +12,6 @@ import "bb/tasks.sh"
 
 export IMAGE="amireh/ansible:${VERSION:-latest}"
 
-tasks.define 'bin/ansible-extend'
 tasks.define 'bin/ansible-stash-vault-pass'
 tasks.define 'mimic/docker_access_test'
 tasks.define 'mimic/groups_test'
