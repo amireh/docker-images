@@ -1,5 +1,13 @@
 import "../assert.sh"
 
+stat_fmt() {
+  if [[ $(uname) =~ "Darwin" ]]; then
+    stat -f "$@"
+  else
+    stat -c "$@"
+  fi
+}
+
 docker_run_as_me() {
   docker_run_as "$(id -u)" "$(id -G)" "$@"
 }
