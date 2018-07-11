@@ -5,6 +5,7 @@ if [[ ! -s ~/'.bishbash/import.sh' ]]; then
   curl -sS -f 'https://raw.githubusercontent.com/amireh/bishbash/2a73e7007bd52c0fd312b505144e4cf853169534/modules/bb/import.sh' > ~/'.bishbash/import.sh'
 fi
 
+# shellcheck source=/dev/null
 source ~/'.bishbash/import.sh'
 
 import.add_package 'bb' 'github:amireh/bishbash#2a73e7007bd52c0fd312b505144e4cf853169534/modules'
@@ -17,7 +18,7 @@ tasks.define 'mimic/docker_access_test'
 tasks.define 'mimic/groups_test'
 tasks.define 'mimic/home_test'
 tasks.define 'mimic/vault_file_test'
-tasks.read_wants $@
+tasks.read_wants "$@"
 
 shift $?
 

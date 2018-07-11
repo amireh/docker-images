@@ -201,6 +201,16 @@ docker run --rm -it \
 
 ## Changelog
 
+### 4.2
+
+- added the `py2-jmespath` to the image allowing the use of the [`json_query`
+  ansible filter](https://docs.ansible.com/ansible/2.5/user_guide/playbooks_filters.html#json-query-filter)
+
+### 4.1
+
+- fixed an issue that was preventing the masquerading user from accessing the
+  docker socket on OS X
+
 ### 4.0
 
 - the `ansible-extend` script has been removed as its scope falls outside of
