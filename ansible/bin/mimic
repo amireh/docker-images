@@ -12,8 +12,7 @@ fi
 
 MIMIC_GROUP="donkey"
 MIMIC_USER="donkey"
-IFS=" " \
-MIMIC_GID_LIST=( $MIMIC_GID )
+IFS=$' ' read -r -a MIMIC_GID_LIST <<< "$MIMIC_GID"
 MIMIC_PRIMARY_GID="${MIMIC_GID_LIST[0]}"
 
 create_groups() {
@@ -21,7 +20,7 @@ create_groups() {
   local group
 
   for gid in "${MIMIC_GID_LIST[@]}"; do
-    if [[ ${gid} == ${MIMIC_GID_LIST[0]} ]]; then
+    if [[ ${gid} == "${MIMIC_GID_LIST[0]}" ]]; then
       group="$MIMIC_GROUP"
     else
       group="mimic-$letter"
@@ -56,8 +55,9 @@ create_home() {
 
 grant_docker_acces_to_donkey() {
   if [[ -a /var/run/docker.sock ]]; then
-    local gid="$(stat -c '%g' /var/run/docker.sock)"
+    local gid
 
+    gid="$(stat -c '%g' /var/run/docker.sock)" &&
     groupadd --non-unique --gid "${gid}" "donkey-docker" &&
     usermod -a -G "${gid}" "$MIMIC_USER"
   fi
@@ -70,6 +70,7 @@ restrict_vault_password_file() {
   fi
 }
 
+# shellcheck disable=SC2015
 create_groups &&
 create_user &&
 create_home &&
