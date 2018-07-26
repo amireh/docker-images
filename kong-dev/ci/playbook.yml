@@ -1,0 +1,50 @@
+- hosts: localhost
+  gather_facts: no
+  handlers:
+    - name: stop docker container
+      docker_container:
+        name: kong-dev-test
+        state: absent
+  tasks:
+    - name: run tests
+      block:
+        - name: launch a pg instance for testing
+          docker_container:
+            image: postgres:9.5-alpine
+            name: kong-dev-test-db
+            state: started
+            detach: yes
+
+        - name: launch docker container for testing
+          docker_container:
+            image: "amireh/kong-dev:{{ version | default('latest') }}"
+            name: kong-dev-test
+            state: started
+            recreate: no
+            detach: yes
+            command: sh
+            interactive: yes
+            links:
+              - kong-dev-test-db
+            env:
+              KONG_DEV_ROCKS_DIR: /mnt/src/rocks
+              KONG_PG_HOST: "kong-dev-test-db"
+              KONG_PG_PORT: 5432
+              KONG_PG_USER: postgres
+              KONG_PG_DATABASE: kong_test
+              KONG_CUSTOM_PLUGINS: 'null'
+            volumes:
+              - "{{ medusa_host_dir }}:/mnt/src:ro"
+
+        - name: create kong pg db
+          command: createdb -h kong-dev-test-db -U postgres kong_test
+          delegate_to: kong-dev-test
+          register: createdb_result
+          failed_when: "createdb_result.rc != 0 and 'already exists' not in createdb_result.stderr"
+
+        - name: busted-kong works
+          command: busted-kong /mnt/src/rocks
+          delegate_to: kong-dev-test
+
+      rescue:
+       - meta: flush_handlers

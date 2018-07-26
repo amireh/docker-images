@@ -1,0 +1,42 @@
+#!/bin/sh
+
+main() {
+  if [ "$KONG_DEV_MIGRATE" = 1 ]; then
+    kong migrations up || exit $?
+  fi
+
+  run "$@"
+}
+
+run() {
+  bustedrc=0
+
+  if [ -d "${KONG_DEV_LUACOV_OUTDIR}" ]; then
+    rm -rf "${KONG_DEV_LUACOV_OUTDIR:?}/*" || exit $?
+  fi
+
+  # run busted but don't exit yet even on failure
+  KONG_NGINX_DAEMON="on" \
+  PATH="/usr/local/openresty/bin:/usr/local/openresty/nginx/sbin:${PATH}" \
+  busted-resty \
+    -f "${KONG_DEV_BUSTED_CONFIG}" \
+    "$@"
+
+  bustedrc=$?
+
+  # generate coverage
+  if [ -f "${KONG_DEV_LUACOV_OUTDIR}/luacov.stats.out" ]; then
+    luacov-cobertura \
+      -c "${KONG_DEV_LUACOV_CONFIG}" \
+      -o "${KONG_DEV_LUACOV_OUTDIR}/luacov.report.out" &&
+    pycobertura show \
+      -s "${KONG_DEV_ROCKS_DIR}" \
+      -f html \
+      -o "${KONG_DEV_LUACOV_OUTDIR}/index.html" \
+      "${KONG_DEV_LUACOV_OUTDIR}/luacov.report.out"
+  fi
+
+  exit $bustedrc
+}
+
+main "$@"

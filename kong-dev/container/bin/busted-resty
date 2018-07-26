@@ -1,0 +1,11 @@
+#!/usr/bin/env resty
+
+require 'luarocks.loader'
+
+require('kong.core.globalpatches')({
+  cli = true,
+  rbusted = true
+})
+
+-- Busted command-line runner
+require('busted.runner')({ standalone = false })
