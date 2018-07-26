@@ -19,7 +19,8 @@ RUN apk add --no-cache \
   python \
   python-dev \
   shadow \
-  yaml-dev
+  yaml-dev \
+  zip
 
 RUN pip install --upgrade pip && \
     pip install pycobertura==0.10.4
@@ -48,7 +49,7 @@ RUN \
       /usr/local/share/lua/5.1/kong/init.lua < \
       /tmp/kong-dev/patches/kong-0.11-2/kong.init.lua.patch && \
     # install spec helper lua files
-    cp -r /tmp/kong-dev/share/* /usr/local/share/lua/5.1/ && \
+    cp -r /tmp/kong-dev/share/kong-0.11-2/* /usr/local/share/lua/5.1/ && \
     # configure luarocks
     mv /usr/local/etc/luarocks/config-5.1.lua /usr/local/etc/luarocks/config-5.1-default.lua && \
     cp /tmp/kong-dev/etc/luarocks-5.1.conf.lua /usr/local/etc/luarocks/config-5.1.lua && \
