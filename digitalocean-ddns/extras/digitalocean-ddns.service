@@ -1,0 +1,18 @@
+[Unit]
+Description=DigitalOcean DDNS
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment=DO_DOMAIN=example.com
+Environment=DO_RECORD=...
+Environment=DO_TOKEN=...
+Environment=FREQUENCY=60
+Environment=PEDANTIC=0
+Environment=PROGRESS=0
+ExecStart=/usr/bin/docker run --rm -i --name my-do-ddns -e DO_TOKEN -e DO_DOMAIN -e DO_RECORD -e FREQUENCY -e PEDANTIC -e PROGRESS amireh/digitalocean-ddns
+ExecStop=/usr/bin/docker stop my-do-ddns
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

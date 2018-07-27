@@ -1,0 +1,84 @@
+#!/bin/bash
+
+DO_API="https://api.digitalocean.com/v2"
+FREQUENCY="${FREQUENCY:-60}"
+PEDANTIC="${PEDANTIC:-0}"
+PROGRESS="${PROGRESS:-1}"
+
+main() {
+  local address
+
+  address="$(query_ip)"
+
+  if [[ -z "$address" ]]; then
+    echo "failed to get public ip address!" 1>&2
+    exit 1
+  fi
+
+  if [[ "$(query_dns)" != "$address" ]]; then
+    echo "public address: $address" 1>&2
+    update_dns "$address"
+    echo "" 1>&2
+  fi
+}
+
+query_ip() {
+  local address
+
+  for service in {icanhazip.com,ifconfig.co}; do
+    address="$(curl -s --connect-timeout 3 "$service")"
+
+    if [[ -n "$address" ]]; then
+      echo "$address"
+      return 0
+    fi
+  done
+
+  dig +short myip.opendns.com @resolver1.opendns.com
+}
+
+query_dns() {
+  curl \
+    -ss \
+    -X GET \
+    -H "Accept: application/json" \
+    -H "Authorization: Bearer $DO_TOKEN" \
+    "${DO_API}/domains/${DO_DOMAIN}/records/${DO_RECORD}" | jq -r .domain_record.data
+}
+
+update_dns() {
+  curl \
+    -ss \
+    -X PUT \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $DO_TOKEN" \
+    -d "{\"data\":\"$1\"}" \
+    "https://api.digitalocean.com/v2/domains/${DO_DOMAIN}/records/${DO_RECORD}"
+}
+
+loop() {
+  local elapsed=0
+  local step=1
+
+  while true; do
+    sleep $step
+    elapsed=$(( elapsed + step ))
+
+    if [[ $elapsed -gt $FREQUENCY ]]; then
+      [[ "$PROGRESS" == "1" ]] && echo ""
+
+      # ignore connectivity failures
+      ( "$@" ) || {
+        if [[ "$PEDANTIC" == "1" ]]; then
+          exit 1
+        fi
+      }
+
+      elapsed=0
+    else
+      [[ "$PROGRESS" == "1" ]] && echo -n '.'
+    fi
+  done
+}
+
+loop main "$@"

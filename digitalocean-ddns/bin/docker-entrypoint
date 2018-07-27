@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# override the default "exec $@" since exec seems to swallow SIGINTs
+"$@"
