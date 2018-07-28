@@ -1,18 +1,22 @@
 language: c
-
 sudo: required
-
+os: linux
 services:
   - docker
-
-os: linux
 
 # skip the install step
 # see https://docs.travis-ci.com/user/customizing-the-build/#Customizing-the-Installation-Step
 install: true
 
 before_install:
-  - docker build -t amireh/ansible:travis-ci .
+  - |
+    on_change_of() {
+      if git diff --name-only HEAD~1 | grep -Eq "^$1/"; then
+        ( cd "$1" && "$@" )
+      fi
+    }
+  - on_change_of 'ansible' ./travis-ci/before_install.sh
+  - on_change_of 'kong-dev' ./travis-ci/before_install.sh
 
 script:
-  - VERSION=travis-ci ./test/main.sh
+  - /bin/true
