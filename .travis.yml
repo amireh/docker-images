@@ -4,19 +4,16 @@ os: linux
 services:
   - docker
 
-# skip the install step
-# see https://docs.travis-ci.com/user/customizing-the-build/#Customizing-the-Installation-Step
-install: true
+env: MEDUSA_ANSIBLE_IMAGE=amireh/ansible:latest
 
 before_install:
-  - |
-    on_change_of() {
-      if git diff --name-only HEAD~1 | grep -Eq "^$1/"; then
-        ( cd "$1" && "$@" )
-      fi
-    }
-  - on_change_of 'ansible' ./travis-ci/before_install.sh
-  - on_change_of 'kong-dev' ./travis-ci/before_install.sh
+  - curl -sS https://raw.githubusercontent.com/amireh/medusa/master/medusa-installer | bash
+  - source ~/.bashrc
+
+install:
+  - docker build -t amireh/ansible:latest ansible/
+  - docker build -t amireh/kong-dev:latest kong-dev/
 
 script:
-  - /bin/true
+  - ( cd ansible && ./test/main.sh )
+  - ( cd kong-dev && ./scripts/ci.sh )
