@@ -11,8 +11,12 @@ install: true
 before_install:
   - |
     on_change_of() {
-      if git diff --name-only HEAD~1 | grep -Eq "^$1/"; then
-        ( cd "$1" && "$@" )
+      local image="$1"
+
+      shift 1
+
+      if git diff --name-only HEAD~1 | grep -Eq "^$image/"; then
+        ( cd "$image" && "$@" )
       fi
     }
   - on_change_of 'ansible' ./travis-ci/before_install.sh
