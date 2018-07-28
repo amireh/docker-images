@@ -201,6 +201,15 @@ docker run --rm -it \
 
 ## Changelog
 
+### 4.3
+
+- `git` is now available in the image
+- the mimic script is now split into two binaries: `mimic` retaining the old
+  functionality and `mimic-setup` that only creates the groups and users
+  necessary for masquerading. This allows the user to choose a sudo method
+  other than `gosu` in case it's not available (e.g. in a multi-stage
+  Dockerfile.)
+
 ### 4.2
 
 - added the `py2-jmespath` to the image allowing the use of the [`json_query`
