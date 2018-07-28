@@ -13,6 +13,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/reposi
       bash \
       build-base \
       curl \
+      git \
       gosu \
       libffi \
       libffi-dev \
