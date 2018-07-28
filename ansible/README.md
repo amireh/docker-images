@@ -1,8 +1,7 @@
 # amireh/ansible
 
-A minimal (yet extensible) installation of Ansible on Alpine Linux with the
-Docker client allowing Ansible to utilize the `docker` connection to provision
-containers.
+A minimal installation of Ansible on Alpine Linux with the Docker client
+allowing Ansible to utilize the `docker` connection to provision containers.
 
 **Table of Contents**
 
@@ -201,6 +200,25 @@ docker run --rm -it \
 ```
 
 ## Changelog
+
+### 4.3
+
+- `git` is now available in the image
+- the mimic script is now split into two binaries: `mimic` retaining the old
+  functionality and `mimic-setup` that only creates the groups and users
+  necessary for masquerading. This allows the user to choose a sudo method
+  other than `gosu` in case it's not available (e.g. in a multi-stage
+  Dockerfile.)
+
+### 4.2
+
+- added the `py2-jmespath` to the image allowing the use of the [`json_query`
+  ansible filter](https://docs.ansible.com/ansible/2.5/user_guide/playbooks_filters.html#json-query-filter)
+
+### 4.1
+
+- fixed an issue that was preventing the masquerading user from accessing the
+  docker socket on OS X
 
 ### 4.0
 

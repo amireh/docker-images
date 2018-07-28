@@ -13,6 +13,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/reposi
       bash \
       build-base \
       curl \
+      git \
       gosu \
       libffi \
       libffi-dev \
@@ -21,6 +22,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/reposi
       openssl \
       openssl-dev \
       py-pip \
+      py2-jmespath \
       python \
       python-dev \
       shadow && \
