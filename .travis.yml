@@ -4,12 +4,11 @@ os: linux
 services:
   - docker
 
-env:
-  - MEDUSA_ANSIBLE_IMAGE="amireh/ansible:latest"
+env: MEDUSA_ANSIBLE_IMAGE=amireh/ansible:latest
 
 before_install:
   - curl -sS https://raw.githubusercontent.com/amireh/medusa/master/medusa-installer | bash
-  - source ~/.bash_profile
+  - source ~/.bashrc
 
 install:
   - docker build -t amireh/ansible:latest ansible/
