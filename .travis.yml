@@ -3,6 +3,9 @@ sudo: required
 os: linux
 services:
   - docker
+branches:
+  only:
+    - master
 
 env: MEDUSA_ANSIBLE_IMAGE=amireh/ansible:latest
 
