@@ -15,6 +15,8 @@ run() {
     rm -rf "${KONG_DEV_LUACOV_OUTDIR:?}/*" || exit $?
   fi
 
+  mkdir -p "${KONG_DEV_LUACOV_OUTDIR}"
+
   # run busted but don't exit yet even on failure
   KONG_NGINX_DAEMON="on" \
   PATH="/usr/local/openresty/bin:/usr/local/openresty/nginx/sbin:${PATH}" \
