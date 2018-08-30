@@ -201,6 +201,11 @@ docker run --rm -it \
 
 ## Changelog
 
+### 4.4
+
+- fixed an issue with `mimic-setup` not being able to create more than 26 
+  groups
+
 ### 4.3
 
 - `git` is now available in the image
