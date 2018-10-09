@@ -1,4 +1,6 @@
-FROM kong:0.11.2-alpine
+ARG KONG_VERSION
+
+FROM kong:${KONG_VERSION}-alpine
 
 ENV KONG_DEV_MIGRATE="1" \
     KONG_DEV_LUACOV_OUTDIR="/usr/local/coverage" \
@@ -47,9 +49,9 @@ RUN \
     # patch kong source code
     patch \
       /usr/local/share/lua/5.1/kong/init.lua < \
-      /tmp/kong-dev/patches/kong-0.11-2/kong.init.lua.patch && \
+      /tmp/kong-dev/patches/kong-${KONG_VERSION}/kong.init.lua.patch && \
     # install spec helper lua files
-    cp -r /tmp/kong-dev/share/kong-0.11-2/* /usr/local/share/lua/5.1/ && \
+    cp -r /tmp/kong-dev/share/kong-${KONG_VERSION}/* /usr/local/share/lua/5.1/ && \
     # configure luarocks
     mv /usr/local/etc/luarocks/config-5.1.lua /usr/local/etc/luarocks/config-5.1-default.lua && \
     cp /tmp/kong-dev/etc/luarocks-5.1.conf.lua /usr/local/etc/luarocks/config-5.1.lua && \

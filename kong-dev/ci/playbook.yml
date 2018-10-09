@@ -48,7 +48,19 @@
 
         - name: busted-kong works
           command: busted-kong /mnt/src/rocks
+          environment:
+            KONG_DEV_LUACOV_OUTDIR: /tmp/luacov
           delegate_to: kong-dev-test
+
+        - name: coverage is generated
+          command: find /tmp/luacov -type f
+          register: coverage_files
+          delegate_to: kong-dev-test
+
+        - assert:
+            that:
+              - "'/tmp/luacov/luacov.stats.out' in coverage_files.stdout"
+              - "'/tmp/luacov/index.html' in coverage_files.stdout"
 
       always:
         - name: remove docker containers

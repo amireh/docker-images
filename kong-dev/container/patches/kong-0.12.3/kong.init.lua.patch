@@ -1,0 +1,19 @@
+--- init.lua	2018-10-09 15:55:10.000000000 -0600
++++ init--patched.lua	2018-10-09 15:54:48.000000000 -0600
+@@ -94,6 +94,16 @@
+     end
+   end
+ 
++  -- instrument code for coverage reporting
++  do
++    local os = require('os')
++    if (os.getenv("KONG_DEV_LUACOV_OUTDIR") or "") ~= "" then
++      local luacov_runner = require("luacov.runner")
++      ngx.log(ngx.DEBUG, "instrumenting source files for coverage reporting")
++      luacov_runner.init(os.getenv("KONG_DEV_LUACOV_CONFIG"))
++    end
++  end
++
+   -- load installed plugins
+   for plugin in pairs(kong_conf.plugins) do
+     local ok, handler = utils.load_module_if_exists("kong.plugins." .. plugin .. ".handler")
