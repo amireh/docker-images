@@ -15,8 +15,10 @@ before_install:
 
 install:
   - docker build -t amireh/ansible:latest ansible/
-  - docker build -t amireh/kong-dev:latest kong-dev/
+  - docker build --build-arg KONG_VERSION=0.11.2 -t amireh/kong-dev:0.11.2 kong-dev/
+  - docker build --build-arg KONG_VERSION=0.12.3 -t amireh/kong-dev:0.12.3 kong-dev/
 
 script:
   - ( cd ansible && ./test/main.sh )
-  - ( cd kong-dev && ./scripts/ci.sh )
+  - ( cd kong-dev && KONG_VERSION=0.11.2 ./scripts/ci.sh )
+  - ( cd kong-dev && KONG_VERSION=0.12.3 ./scripts/ci.sh )
