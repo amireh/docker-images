@@ -12,7 +12,6 @@
             detach: yes
             command: postgres -c "listen_addresses=*"
 
-
         - name: launch a kong docker container for testing
           docker_container:
             image: "amireh/kong-dev:{{ version | default('latest') }}"

@@ -20,5 +20,5 @@ install:
 
 script:
   - ( cd ansible && ./test/main.sh )
-  - ( cd kong-dev && KONG_VERSION=0.11.2 ./scripts/ci.sh )
-  - ( cd kong-dev && KONG_VERSION=0.12.3 ./scripts/ci.sh )
+  - ( cd kong-dev && KONG_VERSION=0.11.2 ./scripts/ci.sh)
+  - ( cd kong-dev && KONG_VERSION=0.12.3 ./scripts/ci.sh)
