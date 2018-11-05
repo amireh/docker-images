@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#
+# shellcheck disable=SC1091
+
+MODULE="${MODULE}"
+FILES="${FILES}"
+OUTDIR="${OUTDIR:-/mnt/src/docs}"
+SRCDIR="${SRCDIR:-/mnt/src}"
+CPUS="${CPUS:-3}"
+
+purge() {
+  rm -rf "$OUTDIR"
+}
+
+stage() {
+  for file in "${FILES[@]}"; do
+    cp "$SRCDIR/$file" /usr/local/ansible/lib/ansible/modules/utilities/logic/ || exit $?
+  done
+}
+
+build() {
+  cd /usr/local/ansible &&
+  . hacking/env-setup 1>/dev/null &&
+  cd /usr/local/ansible/docs/docsite &&
+  make clean &>/dev/null &&
+  CPUS="$CPUS" MODULES="$MODULE" PLUGINS=none DOC_PLUGINS=none make modules &&
+  CPUS="$CPUS" MODULES="$MODULE" PLUGINS=none DOC_PLUGINS=none make htmlsingle rst=modules/"${MODULE}_module".rst
+}
+
+write() {
+  cp -r _build/html "$OUTDIR" && chown -R donkey:donkey "$OUTDIR"
+}
+
+mimic-setup &&
+purge &&
+stage &&
+build &&
+write
