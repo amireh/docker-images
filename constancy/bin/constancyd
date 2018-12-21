@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# Run constancy against all constancy.yml manifests found within
+# /etc/constancy.d and watch it for changes.
+#
+# Watcher will not be engaged if the tree is initially devoid of any manifests.
+
+cd /etc/constancy.d || exit $?
+
+trees="$(find . -type f -name constancy.yml)"
+
+if [ -z "$trees" ]; then
+  exit 0
+fi
+
+push() {
+  constancy check && echo 'yes' | constancy push
+}
+
+for file in $trees; do
+  (cd "$(dirname "$file")" && push)
+done
+
+inotifywait \
+  --monitor \
+  --recursive \
+  --format '%w' \
+  --event create \
+  --event modify \
+  --event delete \
+  . \
+  | while read -r dir; do
+      (cd "$dir" && push)
+    done
