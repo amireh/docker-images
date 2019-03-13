@@ -29,5 +29,12 @@ found inside will be re-run upon an event.
       amireh/constancy:0.1.5 \
         constancyd
 
+## History
+
+### 0.3.1-1
+
+Added patch for constancy to accept --yes flag in push/pull commands
+for a better non-interactive experience.
+
 [constancy]: https://github.com/daveadams/constancy
 [constancy-env]: https://github.com/daveadams/constancy#environment-configuration
