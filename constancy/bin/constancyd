@@ -14,7 +14,7 @@ if [ -z "$trees" ]; then
 fi
 
 push() {
-  constancy check && echo 'yes' | constancy push
+  constancy check && constancy push --yes
 }
 
 for file in $trees; do
