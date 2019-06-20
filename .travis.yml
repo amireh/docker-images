@@ -17,8 +17,10 @@ install:
   - docker build -t amireh/ansible:latest ansible/
   - docker build --build-arg KONG_VERSION=0.11.2 -t amireh/kong-dev:0.11.2 kong-dev/
   - docker build --build-arg KONG_VERSION=0.12.3 -t amireh/kong-dev:0.12.3 kong-dev/
+  - docker build -t amireh/constancy:0.3.2-1 constancy/
 
 script:
   - ( cd ansible && ./test/main.sh )
   - ( cd kong-dev && KONG_VERSION=0.11.2 ./scripts/ci.sh)
   - ( cd kong-dev && KONG_VERSION=0.12.3 ./scripts/ci.sh)
+  - docker run --rm -it amireh/constancy:0.3.2-1 constancy --help | grep -F 'constancy <command> [options]'

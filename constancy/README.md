@@ -31,6 +31,10 @@ found inside will be re-run upon an event.
 
 ## History
 
+### 0.3.2-1
+
+Upgrade to upstream 0.3.2 and drop the monkey patch for `--yes`.
+
 ### 0.3.1-1
 
 Added patch for constancy to accept --yes flag in push/pull commands
